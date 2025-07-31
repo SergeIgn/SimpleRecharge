@@ -40,5 +40,25 @@ public class simple_recharge : BaseUnityPlugin
     private void Update()
     {
         // Code that runs every frame goes here
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            Logger.LogInfo("F1 key pressed, listing all items with charge in the scene.");
+            var items = GameObject.FindObjectsOfType<ItemBattery>();
+            foreach (var item in items)
+            {
+                Logger.LogInfo($"Found GameObject: {item.name} at position {item.transform.position}");
+                Logger.LogInfo($"Found GameObject: {item.name} has battery life: {item.batteryLife}");
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            Logger.LogInfo("F2 key pressed, getting charge.");
+            var items = GameObject.FindObjectsOfType<ItemBattery>();
+            foreach (var item in items)
+            {
+                Logger.LogInfo($"Found GameObject: {item.name} at position {item.transform.position}");
+                item.ChargeBattery(base.gameObject, 25);
+            }
+        }
     }
 }
