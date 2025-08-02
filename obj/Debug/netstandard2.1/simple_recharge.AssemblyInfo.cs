@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FroggittheRandomHopper")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4490a5769a22e2a044d268a8968bbb61e978db7f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e59cd048e3976da24d5389c37a29e50cbf9c5972")]
 [assembly: System.Reflection.AssemblyProductAttribute("simple_recharge")]
 [assembly: System.Reflection.AssemblyTitleAttribute("simple_recharge")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

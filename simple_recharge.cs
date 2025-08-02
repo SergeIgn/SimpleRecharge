@@ -8,24 +8,26 @@ using System;
 
 namespace simple_recharge;
 
-
-//TODO: Update inventory to show the recharge amounts
-//TODO: Add a list of items that can be recharged
+//TODO: Use the list of ChargableItemNames to filter items in the scene
+//TODO: Make ChargableItems a private list?
+//TODO: Update inventory to show the new charge amount
 //TODO: Delete F1 and F2 keys, they are only for debugging purposes
 //TODO: Multiplayer?
 [BepInPlugin("FroggittheRandomHopper.simple_recharge", "simple_recharge", "1.0")]
 public class simple_recharge : BaseUnityPlugin
 {
     public static List<ItemBattery> ChargableItems = [];
+    private List<string> ChargableItemNames = [];
     private static class Recharge
     {
         // Define constants for recharge amounts
-        public const int SMALL = 25;
-        public const int LARGE = 500;
+        public const int SMALL = 50;
+        public const int LARGE = 750;
     }
     private ConfigEntry<int> configRechargeAmountSmall;
     private ConfigEntry<int> configRechargeAmountLarge;
-    //
+    private ConfigEntry<string> configChargableItemNames;
+    private ConfigEntry<bool> configIsWhitelist;
     internal static simple_recharge Instance { get; private set; } = null!;
     internal new static ManualLogSource Logger => Instance._logger;
     private ManualLogSource _logger => base.Logger;
@@ -57,16 +59,19 @@ public class simple_recharge : BaseUnityPlugin
                                                 "RechargeAmountSmall",
                                                 Recharge.SMALL,
                                                 "Recharge amount over time.");
-        //
-        /*List<string> tempList = new List<string>();
-        foreach (var itemName in Recharge.ChargableItemNames)
+        configChargableItemNames = Config.Bind("Advanced",
+                                                "ChargableItemNames",
+                                                "Drone Torque, Rubber Duck, Phase Bridge, Orb Zero Gravity, Melee Inflatable Hammer, Melee Frying Pan, Gun Shockwave",
+                                                "Whitelist of items that can be recharged. Use commas to separate names.");
+        configIsWhitelist = Config.Bind("Advanced",
+                                        "IsWhitelist",
+                                        true,
+                                        "If true, only items in the ChargableItemNames list will be charged.");
+        
+        foreach (var itemName in configChargableItemNames.Value.Split(','))
         {
-            tempList.Add("Item " + itemName + "(Clone)");
+            ChargableItemNames.Add("Item " + itemName.Trim() + "(Clone)");
         }
-        ChargableItemNames.Clear();
-        ChargableItemNames.AddRange(tempList);
-        tempList.Clear();
-        */
 
         Patch();
 
@@ -108,11 +113,18 @@ public class simple_recharge : BaseUnityPlugin
                 Logger.LogInfo("Time since level started: " + levelTime + " seconds");
             }
         }
-        //
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            Logger.LogInfo("F2 key pressed, providing list of valid chargable items.");
+            foreach (var item in ChargableItemNames)
+            {
+                Logger.LogInfo($"Chargable item: {item}");
+            }
+        }
     }
     [HarmonyPatch(typeof(ExtractionPoint))]
     [HarmonyPatch("DestroyAllPhysObjectsInHaulList")]
-    class Patch_extraction
+    class Patch_extraction_ChargeItems
     {
         // This method is called when the extraction point is activated
         // It will charge all items in the scene when the extraction is complete
@@ -126,22 +138,46 @@ public class simple_recharge : BaseUnityPlugin
     }
     [HarmonyPatch(typeof(ExtractionPoint))]
     [HarmonyPatch("ActivateTheFirstExtractionPointAutomaticallyWhenAPlayerLeaveTruck")]
-    class Patch_extraction2
+    class Patch_extraction_FindItems
     {
         // This method is called when the extraction point is activated for the first time
         // It will initialize the ChargableItems list
         static void Postfix(ExtractionPoint __instance)
         {
+            List<ItemBattery> templist = [];
             ChargableItems.Clear();
             ChargableItems.AddRange(GameObject.FindObjectsOfType<ItemBattery>());
+            foreach (var item in ChargableItems)
+            {
+                if (Instance.configIsWhitelist.Value)
+                {
+                    // If the config is set to whitelist, only add items that are in the ChargableItemNames list
+                    if (Instance.ChargableItemNames.Contains(item.name))
+                    {
+                        templist.Add(item);
+                    }
+                }
+                else
+                {
+                    // If the config is set to blacklist, add all items that are not in the ChargableItemNames list
+                    if (!Instance.ChargableItemNames.Contains(item.name))
+                    {
+                        templist.Add(item);
+                    }
+                }
+            }
+            ChargableItems.Clear();
+            ChargableItems.AddRange(templist);
+            templist.Clear();
             if (ChargableItems.Count == 0)
             {
                 Logger.LogInfo("No chargable items found in the scene.");
             }
             else
             {
-                Logger.LogInfo($"{ChargableItems.Count} chargable items found in the scene.");
+                Logger.LogInfo($"{ChargableItems.Count} valid chargable items found in the scene.");
             }
+
         }
     }
     [HarmonyPatch(typeof(RunManager))]
