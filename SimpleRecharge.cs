@@ -20,9 +20,11 @@ public class SimpleRecharge : BaseUnityPlugin
     private static class Recharge
     {
         // Define constants for recharge amounts
-        public const int SMALL = 50;
+        public const int SMALL = 150;
         public const int LARGE = 750;
     }
+    private float timer = 0f;
+    private readonly float interval = 30f;
     private ConfigEntry<int> configRechargeAmountSmall;
     private ConfigEntry<int> configRechargeAmountLarge;
     private ConfigEntry<string> configChargableItemNames;
@@ -90,9 +92,11 @@ public class SimpleRecharge : BaseUnityPlugin
 
     private void Update()
     {
-        // Every 30 seconds, add a small charge to all items in the ChargableItems list
-        if (MathF.Round(Time.timeSinceLevelLoad % 30) == 0)
+        timer += Time.deltaTime;
+        // Every interval, add a small charge to all items in the ChargableItems list
+        if (timer >= interval)
         {
+            timer = 0f; // Reset the timer
             if (ChargableItems.Count != 0)
             {
                 Add_Charge(Instance.configRechargeAmountSmall.Value);
