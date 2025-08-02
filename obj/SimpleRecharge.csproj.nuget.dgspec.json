@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Projects\\REPO_projects\\First-REPO-Mod\\simple_recharge.csproj": {}
+    "D:\\Projects\\REPO_projects\\First-REPO-Mod\\SimpleRecharge.csproj": {}
   },
   "projects": {
-    "D:\\Projects\\REPO_projects\\First-REPO-Mod\\simple_recharge.csproj": {
+    "D:\\Projects\\REPO_projects\\First-REPO-Mod\\SimpleRecharge.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Projects\\REPO_projects\\First-REPO-Mod\\simple_recharge.csproj",
-        "projectName": "simple_recharge",
-        "projectPath": "D:\\Projects\\REPO_projects\\First-REPO-Mod\\simple_recharge.csproj",
+        "projectUniqueName": "D:\\Projects\\REPO_projects\\First-REPO-Mod\\SimpleRecharge.csproj",
+        "projectName": "SimpleRecharge",
+        "projectPath": "D:\\Projects\\REPO_projects\\First-REPO-Mod\\SimpleRecharge.csproj",
         "packagesPath": "C:\\Users\\sergi\\.nuget\\packages\\",
         "outputPath": "D:\\Projects\\REPO_projects\\First-REPO-Mod\\obj\\",
         "projectStyle": "PackageReference",

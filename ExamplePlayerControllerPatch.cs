@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 
-namespace simple_recharge;
+namespace SimpleRecharge;
 
 [HarmonyPatch(typeof(PlayerController))]
 static class ExamplePlayerControllerPatch
@@ -10,13 +10,13 @@ static class ExamplePlayerControllerPatch
     private static void Start_Prefix(PlayerController __instance)
     {
         // Code to execute for each PlayerController *before* Start() is called.
-        simple_recharge.Logger.LogDebug($"{__instance} Start Prefix");
+        SimpleRecharge.Logger.LogDebug($"{__instance} Start Prefix");
     }
 
     [HarmonyPostfix, HarmonyPatch(nameof(PlayerController.Start))]
     private static void Start_Postfix(PlayerController __instance)
     {
         // Code to execute for each PlayerController *after* Start() is called.
-        simple_recharge.Logger.LogDebug($"{__instance} Start Postfix");
+        SimpleRecharge.Logger.LogDebug($"{__instance} Start Postfix");
     }
 }

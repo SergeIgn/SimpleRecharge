@@ -6,15 +6,14 @@ using HarmonyLib;
 using UnityEngine;
 using System;
 
-namespace simple_recharge;
+namespace SimpleRecharge;
 
-//TODO: Use the list of ChargableItemNames to filter items in the scene
 //TODO: Make ChargableItems a private list?
 //TODO: Update inventory to show the new charge amount
 //TODO: Delete F1 and F2 keys, they are only for debugging purposes
 //TODO: Multiplayer?
-[BepInPlugin("FroggittheRandomHopper.simple_recharge", "simple_recharge", "1.0")]
-public class simple_recharge : BaseUnityPlugin
+[BepInPlugin("FroggitTRH.SimpleRecharge", "SimpleRecharge", "1.0")]
+public class SimpleRecharge : BaseUnityPlugin
 {
     public static List<ItemBattery> ChargableItems = [];
     private List<string> ChargableItemNames = [];
@@ -28,7 +27,7 @@ public class simple_recharge : BaseUnityPlugin
     private ConfigEntry<int> configRechargeAmountLarge;
     private ConfigEntry<string> configChargableItemNames;
     private ConfigEntry<bool> configIsWhitelist;
-    internal static simple_recharge Instance { get; private set; } = null!;
+    internal static SimpleRecharge Instance { get; private set; } = null!;
     internal new static ManualLogSource Logger => Instance._logger;
     private ManualLogSource _logger => base.Logger;
     internal Harmony? Harmony { get; set; }

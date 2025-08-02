@@ -1,0 +1,9 @@
+D:\Projects\REPO_projects\First-REPO-Mod\bin\Debug\netstandard2.1\SimpleRecharge.deps.json
+D:\Projects\REPO_projects\First-REPO-Mod\bin\Debug\netstandard2.1\SimpleRecharge.dll
+D:\Projects\REPO_projects\First-REPO-Mod\obj\Debug\netstandard2.1\SimpleRecharge.csproj.AssemblyReference.cache
+D:\Projects\REPO_projects\First-REPO-Mod\obj\Debug\netstandard2.1\SimpleRecharge.GeneratedMSBuildEditorConfig.editorconfig
+D:\Projects\REPO_projects\First-REPO-Mod\obj\Debug\netstandard2.1\SimpleRecharge.AssemblyInfoInputs.cache
+D:\Projects\REPO_projects\First-REPO-Mod\obj\Debug\netstandard2.1\SimpleRecharge.AssemblyInfo.cs
+D:\Projects\REPO_projects\First-REPO-Mod\obj\Debug\netstandard2.1\SimpleRecharge.csproj.CoreCompileInputs.cache
+D:\Projects\REPO_projects\First-REPO-Mod\obj\Debug\netstandard2.1\SimpleRecharge.sourcelink.json
+D:\Projects\REPO_projects\First-REPO-Mod\obj\Debug\netstandard2.1\SimpleRecharge.dll

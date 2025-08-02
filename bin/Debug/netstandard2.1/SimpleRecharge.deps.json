@@ -7,7 +7,7 @@
   "targets": {
     ".NETStandard,Version=v2.1": {},
     ".NETStandard,Version=v2.1/": {
-      "simple_recharge/1.0.0": {
+      "SimpleRecharge/1.0.0": {
         "dependencies": {
           "BepInEx.Analyzers": "1.0.8",
           "BepInEx.AssemblyPublicizer.MSBuild": "0.4.1",
@@ -17,7 +17,7 @@
           "UnityEngine.Modules": "2022.3.21"
         },
         "runtime": {
-          "simple_recharge.dll": {}
+          "SimpleRecharge.dll": {}
         }
       },
       "BepInEx.Analyzers/1.0.8": {},
@@ -278,7 +278,7 @@
     }
   },
   "libraries": {
-    "simple_recharge/1.0.0": {
+    "SimpleRecharge/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
