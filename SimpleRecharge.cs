@@ -92,6 +92,7 @@ public class SimpleRecharge : BaseUnityPlugin
 
     private void Update()
     {
+        // Code that runs every frame goes here
         timer += Time.deltaTime;
         // Every interval, add a small charge to all items in the ChargableItems list
         if (timer >= interval)
@@ -102,7 +103,6 @@ public class SimpleRecharge : BaseUnityPlugin
                 Add_Charge(Instance.configRechargeAmountSmall.Value);
             }
         }
-        // Code that runs every frame goes here
         if (Input.GetKeyDown(KeyCode.F1))
         {
             Logger.LogInfo("F1 key pressed, listing all items with charge in the scene.");
@@ -143,9 +143,9 @@ public class SimpleRecharge : BaseUnityPlugin
     [HarmonyPatch("ActivateTheFirstExtractionPointAutomaticallyWhenAPlayerLeaveTruck")]
     class Patch_extraction_FindItems
     {
+        static void Postfix(ExtractionPoint __instance)
         // This method is called when the extraction point is activated for the first time
         // It will initialize the ChargableItems list
-        static void Postfix(ExtractionPoint __instance)
         {
             List<ItemBattery> templist = [];
             ChargableItems.Clear();
