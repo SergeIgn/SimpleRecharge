@@ -9,7 +9,6 @@ using System;
 namespace SimpleRecharge;
 
 //TODO: Make ChargableItems a private list?
-//TODO: Update inventory to show the new charge amount
 //TODO: Delete F1 and F2 keys, they are only for debugging purposes
 //TODO: Multiplayer?
 [BepInPlugin("FroggitTRH.SimpleRecharge", "SimpleRecharge", "1.0")]
@@ -20,13 +19,15 @@ public class SimpleRecharge : BaseUnityPlugin
     private static class Recharge
     {
         // Define constants for recharge amounts
+        // Redundant class?
         public const int SMALL = 150;
         public const int LARGE = 750;
+        public const float INTERVAL = 30f;
     }
     private float timer = 0f;
-    private readonly float interval = 30f;
     private ConfigEntry<int> configRechargeAmountSmall;
     private ConfigEntry<int> configRechargeAmountLarge;
+    private ConfigEntry<float> configIntervalSeconds;
     private ConfigEntry<string> configChargableItemNames;
     private ConfigEntry<bool> configIsWhitelist;
     internal static SimpleRecharge Instance { get; private set; } = null!;
@@ -51,24 +52,29 @@ public class SimpleRecharge : BaseUnityPlugin
         this.gameObject.hideFlags = HideFlags.HideAndDontSave;
 
         // Config file setup
+        // Bind (Category, name, default value????, description)
         configRechargeAmountLarge = Config.Bind("General",
-                                                "RechargeAmountLarge",
+                                                "Recharge Amount Large",
                                                 Recharge.LARGE,
-                                                "Recharge amount upon extracting.");
+                                                "Recharge amount upon extracting. To turn off put 0");
 
         configRechargeAmountSmall = Config.Bind("General",
-                                                "RechargeAmountSmall",
+                                                "Recharge Amount Small",
                                                 Recharge.SMALL,
-                                                "Recharge amount over time.");
+                                                "Recharge amount over time. To turn off put 0");
+        configIntervalSeconds = Config.Bind("General",
+                                            "Small recharge interval",
+                                            Recharge.INTERVAL,
+                                            "Interval between small recharges in SECONDS");
         configChargableItemNames = Config.Bind("Advanced",
                                                 "ChargableItemNames",
                                                 "Drone Torque, Rubber Duck, Phase Bridge, Orb Zero Gravity, Melee Inflatable Hammer, Melee Frying Pan, Gun Shockwave",
-                                                "Whitelist of items that can be recharged. Use commas to separate names.");
+                                                "Whitelist of items that can be recharged. Use commas to separate names. Press F1 to print all chargable items in the scene to the console. F2 prints out only valid ones.");
         configIsWhitelist = Config.Bind("Advanced",
-                                        "IsWhitelist",
+                                        "Whitelist",
                                         true,
-                                        "If true, only items in the ChargableItemNames list will be charged.");
-        
+                                        "If true, only items in the ChargableItemNames list will be charged. Otherwise as a blacklist");
+
         foreach (var itemName in configChargableItemNames.Value.Split(','))
         {
             ChargableItemNames.Add("Item " + itemName.Trim() + "(Clone)");
@@ -95,7 +101,7 @@ public class SimpleRecharge : BaseUnityPlugin
         // Code that runs every frame goes here
         timer += Time.deltaTime;
         // Every interval, add a small charge to all items in the ChargableItems list
-        if (timer >= interval)
+        if (timer >= Instance.configIntervalSeconds.Value)
         {
             timer = 0f; // Reset the timer
             if (ChargableItems.Count != 0)

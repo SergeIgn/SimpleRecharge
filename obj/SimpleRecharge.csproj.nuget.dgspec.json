@@ -27,6 +27,7 @@
         },
         "frameworks": {
           "netstandard2.1": {
+            "framework": "netstandard2.1",
             "targetAlias": "netstandard2.1",
             "projectReferences": {}
           }
@@ -40,10 +41,12 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "10.0.300"
       },
       "frameworks": {
         "netstandard2.1": {
+          "framework": "netstandard2.1",
           "targetAlias": "netstandard2.1",
           "dependencies": {
             "BepInEx.Analyzers": {
@@ -95,7 +98,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.413\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.303\\RuntimeIdentifierGraph.json"
         }
       }
     }
