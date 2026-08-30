@@ -16,14 +16,6 @@ public class SimpleRecharge : BaseUnityPlugin
 {
     private static List<ItemBattery> _chargeableItems = [];
     private readonly HashSet<string> _chargeableItemNames = new();
-    private static class Recharge
-    {
-        // Define constants for recharge amounts
-        // Should it be a sctucture instead?
-        public const int SMALL = 150;
-        public const int LARGE = 750;
-        public const float INTERVAL = 30f;
-    }
     private float _timer = 0f;
     private ConfigEntry<int> _configRechargeAmountSmall;
     private ConfigEntry<int> _configRechargeAmountLarge;
@@ -88,33 +80,38 @@ public class SimpleRecharge : BaseUnityPlugin
 
         // Config file setup
         // Bind (Category, name, default value, description)
-        _configRechargeAmountLarge = Config.Bind("General",
-                                                "Recharge Amount Large",
-                                                Recharge.LARGE,
-                                                "Recharge amount upon extracting. To turn off put 0"
-                                                );
-        _configRechargeAmountSmall = Config.Bind("General",
-                                                "Recharge Amount Small",
-                                                Recharge.SMALL,
-                                                "Recharge amount over time. To turn off put 0"
-                                                );
-        _configIntervalSeconds = Config.Bind("General",
-                                            "Small recharge interval",
-                                            Recharge.INTERVAL,
-                                            new ConfigDescription(
-                                                "Interval between small recharges in seconds.",
-                                                new AcceptableValueRange<float>(0.1f, 3600f))
-                                            );
-        _configChargeableItemNames = Config.Bind("Advanced",
-                                                "ChargableItemNames",
-                                                "Drone Torque, Rubber Duck, Phase Bridge, Orb Zero Gravity, Melee Inflatable Hammer, Melee Frying Pan, Gun Shockwave",
-                                                "Whitelist of items that can be recharged. Use commas to separate names. Press F1 to print all chargable items in the scene to the console. F2 prints out only valid ones."
-                                                );
-        _configIsWhitelist = Config.Bind("Advanced",
-                                        "Whitelist",
-                                        true,
-                                        "If true, only items in the ChargableItemNames list will be recharged. False, every other item will be recharged."
-                                        );
+        _configRechargeAmountLarge = Config.Bind(
+            "Recharge",
+            "Extraction Recharge Amount",
+            750,
+            "Amount of battery charge restored after extraction."
+        );
+        _configRechargeAmountSmall = Config.Bind(
+            "Recharge",
+            "Periodic Recharge Amount",
+            150,
+            "Amount of battery charge restored periodically."
+        );
+        _configIntervalSeconds = Config.Bind(
+            "Recharge",
+            "Periodic recharge interval",
+            30f,
+            new ConfigDescription(
+                "Interval between small recharges in seconds.",
+                new AcceptableValueRange<float>(0.1f, 3600f))
+        );
+        _configChargeableItemNames = Config.Bind(
+            "Items",
+            "Items",
+            "Drone Torque, Rubber Duck, Phase Bridge, Orb Zero Gravity, Melee Inflatable Hammer, Melee Frying Pan, Gun Shockwave",
+            "Comma-separated list of item names."
+        );
+        _configIsWhitelist = Config.Bind(
+            "Items",
+            "Whitelist",
+            true,
+            "True means, that only items in the Items list will be recharged. False = no recharge for listed items"
+        );
 
         foreach (var itemName in _configChargeableItemNames.Value.Split(','))
         {
