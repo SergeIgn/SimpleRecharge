@@ -118,17 +118,15 @@ public class SimpleRecharge : BaseUnityPlugin
             {
                 Logger.LogInfo($"Found GameObject: {item.name} at position {item.transform.position}");
                 Logger.LogInfo($"Found GameObject: {item} has battery life: {item.batteryLife}");
-                Logger.LogInfo("Time since level load: " + Time.timeSinceLevelLoad);
-                float levelTime = Time.timeSinceLevelLoad;
-                Logger.LogInfo("Time since level started: " + levelTime + " seconds");
             }
+            Logger.LogInfo("Time since level load: " + Time.timeSinceLevelLoad);
         }
         if (Input.GetKeyDown(KeyCode.F2))
         {
             Logger.LogInfo("F2 key pressed, providing list of valid chargable items.");
-            foreach (var item in ChargableItemNames)
+            foreach (var item in ChargableItems)
             {
-                Logger.LogInfo($"Chargable item: {item}");
+                Logger.LogInfo($"Chargable item: {item.name}");
             }
         }
     }
@@ -154,31 +152,17 @@ public class SimpleRecharge : BaseUnityPlugin
         // This method is called when an extraction point is activated for the first time
         // It will initialize the ChargableItems list
         {
-            List<ItemBattery> templist = [];
             ChargableItems.Clear();
-            ChargableItems.AddRange(GameObject.FindObjectsOfType<ItemBattery>());
-            foreach (var item in ChargableItems)
+            foreach (var item in GameObject.FindObjectsOfType<ItemBattery>())
             {
-                if (Instance.configIsWhitelist.Value)
+                // Is there the item in the list?
+                bool matches = Instance.ChargableItemNames.Contains(item.name);
+                // Instance.configIsWhitelist.Value == Should the items in the list be recharged?
+                if (Instance.configIsWhitelist.Value == matches)
                 {
-                    // If the config is set to whitelist, only add items that are in the ChargableItemNames list
-                    if (Instance.ChargableItemNames.Contains(item.name))
-                    {
-                        templist.Add(item);
-                    }
-                }
-                else
-                {
-                    // If the config is set to blacklist, add all items that are not in the ChargableItemNames list
-                    if (!Instance.ChargableItemNames.Contains(item.name))
-                    {
-                        templist.Add(item);
-                    }
+                    ChargableItems.Add(item);
                 }
             }
-            ChargableItems.Clear();
-            ChargableItems.AddRange(templist);
-            templist.Clear();
             if (ChargableItems.Count == 0)
             {
                 Logger.LogInfo("No chargable items found in the scene.");
