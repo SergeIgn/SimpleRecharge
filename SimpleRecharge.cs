@@ -8,9 +8,9 @@ using System;
 
 namespace SimpleRecharge;
 
-//TODO: Make ChargableItems a private list?
-//TODO: Delete F1 and F2 keys, they are only for debugging purposes
-//TODO: Multiplayer?
+//TODO:
+//  Multiplayer test
+//  Vehicle test
 [BepInPlugin("FroggitTRH.SimpleRecharge", "SimpleRecharge", "1.0")]
 public class SimpleRecharge : BaseUnityPlugin
 {
@@ -19,7 +19,7 @@ public class SimpleRecharge : BaseUnityPlugin
     private static class Recharge
     {
         // Define constants for recharge amounts
-        // Redundant class?
+        // Should it be a sctucture instead?
         public const int SMALL = 150;
         public const int LARGE = 750;
         public const float INTERVAL = 30f;
@@ -52,7 +52,7 @@ public class SimpleRecharge : BaseUnityPlugin
         this.gameObject.hideFlags = HideFlags.HideAndDontSave;
 
         // Config file setup
-        // Bind (Category, name, default value????, description)
+        // Bind (Category, name, default value, description)
         configRechargeAmountLarge = Config.Bind("General",
                                                 "Recharge Amount Large",
                                                 Recharge.LARGE,
@@ -73,10 +73,11 @@ public class SimpleRecharge : BaseUnityPlugin
         configIsWhitelist = Config.Bind("Advanced",
                                         "Whitelist",
                                         true,
-                                        "If true, only items in the ChargableItemNames list will be charged. Otherwise as a blacklist");
+                                        "If true, only items in the ChargableItemNames list will be recharged. False, every other item will be recharged.");
 
         foreach (var itemName in configChargableItemNames.Value.Split(','))
         {
+            // Items in the scene have the following name
             ChargableItemNames.Add("Item " + itemName.Trim() + "(Clone)");
         }
 
@@ -135,8 +136,8 @@ public class SimpleRecharge : BaseUnityPlugin
     [HarmonyPatch("DestroyAllPhysObjectsInHaulList")]
     class Patch_extraction_ChargeItems
     {
-        // This method is called when the extraction point is activated
-        // It will charge all items in the scene when the extraction is complete
+        // This method is called when an extraction point is activated
+        // It will charge all items in the scene when an extraction is completed
         static void Postfix(ExtractionPoint __instance)
         {
             if (ChargableItems.Count != 0)
@@ -150,7 +151,7 @@ public class SimpleRecharge : BaseUnityPlugin
     class Patch_extraction_FindItems
     {
         static void Postfix(ExtractionPoint __instance)
-        // This method is called when the extraction point is activated for the first time
+        // This method is called when an extraction point is activated for the first time
         // It will initialize the ChargableItems list
         {
             List<ItemBattery> templist = [];
