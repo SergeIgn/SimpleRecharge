@@ -14,7 +14,7 @@ namespace SimpleRecharge;
 [BepInPlugin("FroggitTRH.SimpleRecharge", "SimpleRecharge", "1.0")]
 public class SimpleRecharge : BaseUnityPlugin
 {
-    public static List<ItemBattery> ChargableItems = [];
+    private static List<ItemBattery> _chargeableItems = [];
     private readonly HashSet<string> _chargeableItemNames = new();
     private static class Recharge
     {
@@ -25,20 +25,20 @@ public class SimpleRecharge : BaseUnityPlugin
         public const float INTERVAL = 30f;
     }
     private float timer = 0f;
-    private ConfigEntry<int> configRechargeAmountSmall;
-    private ConfigEntry<int> configRechargeAmountLarge;
-    private ConfigEntry<float> configIntervalSeconds;
-    private ConfigEntry<string> configChargableItemNames;
-    private ConfigEntry<bool> configIsWhitelist;
+    private ConfigEntry<int> _configRechargeAmountSmall;
+    private ConfigEntry<int> _configRechargeAmountLarge;
+    private ConfigEntry<float> _configIntervalSeconds;
+    private ConfigEntry<string> _configChargeableItemNames;
+    private ConfigEntry<bool> _configIsWhitelist;
     internal static SimpleRecharge Instance { get; private set; } = null!;
     internal new static ManualLogSource Logger => Instance._logger;
     private ManualLogSource _logger => base.Logger;
     internal Harmony? Harmony { get; set; }
 
-    private void Add_Charge(int amount)
+    private void AddCharge(int amount)
     {
-        // This method adds a charge to all items in the ChargableItems list
-        foreach (var item in ChargableItems)
+        // This method adds a charge to all items in the _chargeableItems list
+        foreach (var item in _chargeableItems)
         {
             item.ChargeBattery(base.gameObject, amount);
         }
@@ -53,29 +53,35 @@ public class SimpleRecharge : BaseUnityPlugin
 
         // Config file setup
         // Bind (Category, name, default value, description)
-        configRechargeAmountLarge = Config.Bind("General",
+        _configRechargeAmountLarge = Config.Bind("General",
                                                 "Recharge Amount Large",
                                                 Recharge.LARGE,
-                                                "Recharge amount upon extracting. To turn off put 0");
-
-        configRechargeAmountSmall = Config.Bind("General",
+                                                "Recharge amount upon extracting. To turn off put 0"
+                                                );
+        _configRechargeAmountSmall = Config.Bind("General",
                                                 "Recharge Amount Small",
                                                 Recharge.SMALL,
-                                                "Recharge amount over time. To turn off put 0");
-        configIntervalSeconds = Config.Bind("General",
+                                                "Recharge amount over time. To turn off put 0"
+                                                );
+        _configIntervalSeconds = Config.Bind("General",
                                             "Small recharge interval",
                                             Recharge.INTERVAL,
-                                            "Interval between small recharges in SECONDS");
-        configChargableItemNames = Config.Bind("Advanced",
+                                            new ConfigDescription(
+                                                "Interval between small recharges in seconds.",
+                                                new AcceptableValueRange<float>(0.1f, 3600f))
+                                            );
+        _configChargeableItemNames = Config.Bind("Advanced",
                                                 "ChargableItemNames",
                                                 "Drone Torque, Rubber Duck, Phase Bridge, Orb Zero Gravity, Melee Inflatable Hammer, Melee Frying Pan, Gun Shockwave",
-                                                "Whitelist of items that can be recharged. Use commas to separate names. Press F1 to print all chargable items in the scene to the console. F2 prints out only valid ones.");
-        configIsWhitelist = Config.Bind("Advanced",
+                                                "Whitelist of items that can be recharged. Use commas to separate names. Press F1 to print all chargable items in the scene to the console. F2 prints out only valid ones."
+                                                );
+        _configIsWhitelist = Config.Bind("Advanced",
                                         "Whitelist",
                                         true,
-                                        "If true, only items in the ChargableItemNames list will be recharged. False, every other item will be recharged.");
+                                        "If true, only items in the ChargableItemNames list will be recharged. False, every other item will be recharged."
+                                        );
 
-        foreach (var itemName in configChargableItemNames.Value.Split(','))
+        foreach (var itemName in _configChargeableItemNames.Value.Split(','))
         {
             // Items in the scene have the following name
             _chargeableItemNames.Add("Item " + itemName.Trim() + "(Clone)");
@@ -101,13 +107,13 @@ public class SimpleRecharge : BaseUnityPlugin
     {
         // Code that runs every frame goes here
         timer += Time.deltaTime;
-        // Every interval, add a small charge to all items in the ChargableItems list
-        if (timer >= Instance.configIntervalSeconds.Value)
+        // Every interval, add a small charge to all items in the _chargeableItems list
+        if (timer >= _configIntervalSeconds.Value)
         {
-            timer = 0f; // Reset the timer
-            if (ChargableItems.Count != 0)
+            timer -= _configIntervalSeconds.Value; // Reset the timer
+            if (_chargeableItems.Count != 0)
             {
-                Add_Charge(Instance.configRechargeAmountSmall.Value);
+                AddCharge(_configRechargeAmountSmall.Value);
             }
         }
         if (Input.GetKeyDown(KeyCode.F1))
@@ -124,7 +130,7 @@ public class SimpleRecharge : BaseUnityPlugin
         if (Input.GetKeyDown(KeyCode.F2))
         {
             Logger.LogInfo("F2 key pressed, providing list of valid chargable items.");
-            foreach (var item in ChargableItems)
+            foreach (var item in _chargeableItems)
             {
                 Logger.LogInfo($"Chargable item: {item.name}");
             }
@@ -138,9 +144,9 @@ public class SimpleRecharge : BaseUnityPlugin
         // It will charge all items in the scene when an extraction is completed
         static void Postfix(ExtractionPoint __instance)
         {
-            if (ChargableItems.Count != 0)
+            if (_chargeableItems.Count != 0)
             {
-                Instance.Add_Charge(Instance.configRechargeAmountLarge.Value);
+                Instance.AddCharge(Instance._configRechargeAmountLarge.Value);
             }
         }
     }
@@ -150,26 +156,26 @@ public class SimpleRecharge : BaseUnityPlugin
     {
         static void Postfix(ExtractionPoint __instance)
         // This method is called when an extraction point is activated for the first time
-        // It will initialize the ChargableItems list
+        // It will initialize the _chargeableItems list
         {
-            ChargableItems.Clear();
+            _chargeableItems.Clear();
             foreach (var item in GameObject.FindObjectsOfType<ItemBattery>())
             {
                 // Is there the item in the list?
                 bool matches = Instance._chargeableItemNames.Contains(item.name);
-                // Instance.configIsWhitelist.Value == Should the items in the list be recharged?
-                if (Instance.configIsWhitelist.Value == matches)
+                // Instance._configIsWhitelist.Value == Should the items in the list be recharged?
+                if (Instance._configIsWhitelist.Value == matches)
                 {
-                    ChargableItems.Add(item);
+                    _chargeableItems.Add(item);
                 }
             }
-            if (ChargableItems.Count == 0)
+            if (_chargeableItems.Count == 0)
             {
                 Logger.LogInfo("No chargable items found in the scene.");
             }
             else
             {
-                Logger.LogInfo($"{ChargableItems.Count} valid chargable items found in the scene.");
+                Logger.LogInfo($"{_chargeableItems.Count} valid chargable items found in the scene.");
             }
 
         }
@@ -181,8 +187,8 @@ public class SimpleRecharge : BaseUnityPlugin
         static void Prefix(RunManager __instance)
         {
             // This method is called when the level changes
-            // It will clear the ChargableItems list to prevent accessing non-existent items
-            ChargableItems.Clear();
+            // It will clear the _chargeableItems list to prevent accessing non-existent items
+            _chargeableItems.Clear();
             Logger.LogInfo("Chargable items list cleared on level change.");
         }
     }
