@@ -2953,11 +2953,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Projects\\REPO_projects\\First-REPO-Mod\\SimpleRecharge.csproj",
+      "projectUniqueName": "D:\\Projects\\REPO_projects\\SimpleRecharge\\SimpleRecharge.csproj",
       "projectName": "SimpleRecharge",
-      "projectPath": "D:\\Projects\\REPO_projects\\First-REPO-Mod\\SimpleRecharge.csproj",
+      "projectPath": "D:\\Projects\\REPO_projects\\SimpleRecharge\\SimpleRecharge.csproj",
       "packagesPath": "C:\\Users\\sergi\\.nuget\\packages\\",
-      "outputPath": "D:\\Projects\\REPO_projects\\First-REPO-Mod\\obj\\",
+      "outputPath": "D:\\Projects\\REPO_projects\\SimpleRecharge\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\sergi\\AppData\\Roaming\\NuGet\\NuGet.Config"

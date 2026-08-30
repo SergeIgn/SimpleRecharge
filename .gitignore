@@ -1,0 +1,25 @@
+# Build output
+bin/
+obj/
+
+# Compiled mod / debug symbols
+*.dll
+*.pdb
+plugins/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.csproj.user
+
+# Unity
+Library/
+Temp/
+Logs/
+UserSettings/
+
+# Local BepInEx/game files
+BepInEx/
+doorstop_config.ini
+winhttp.dll
