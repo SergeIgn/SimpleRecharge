@@ -15,7 +15,7 @@ namespace SimpleRecharge;
 public class SimpleRecharge : BaseUnityPlugin
 {
     public static List<ItemBattery> ChargableItems = [];
-    private List<string> ChargableItemNames = [];
+    private readonly HashSet<string> _chargeableItemNames = new();
     private static class Recharge
     {
         // Define constants for recharge amounts
@@ -78,7 +78,7 @@ public class SimpleRecharge : BaseUnityPlugin
         foreach (var itemName in configChargableItemNames.Value.Split(','))
         {
             // Items in the scene have the following name
-            ChargableItemNames.Add("Item " + itemName.Trim() + "(Clone)");
+            _chargeableItemNames.Add("Item " + itemName.Trim() + "(Clone)");
         }
 
         Patch();
@@ -156,7 +156,7 @@ public class SimpleRecharge : BaseUnityPlugin
             foreach (var item in GameObject.FindObjectsOfType<ItemBattery>())
             {
                 // Is there the item in the list?
-                bool matches = Instance.ChargableItemNames.Contains(item.name);
+                bool matches = Instance._chargeableItemNames.Contains(item.name);
                 // Instance.configIsWhitelist.Value == Should the items in the list be recharged?
                 if (Instance.configIsWhitelist.Value == matches)
                 {
