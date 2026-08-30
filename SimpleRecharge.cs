@@ -24,7 +24,7 @@ public class SimpleRecharge : BaseUnityPlugin
         public const int LARGE = 750;
         public const float INTERVAL = 30f;
     }
-    private float timer = 0f;
+    private float _timer = 0f;
     private ConfigEntry<int> _configRechargeAmountSmall;
     private ConfigEntry<int> _configRechargeAmountLarge;
     private ConfigEntry<float> _configIntervalSeconds;
@@ -41,6 +41,41 @@ public class SimpleRecharge : BaseUnityPlugin
         foreach (var item in _chargeableItems)
         {
             item.ChargeBattery(base.gameObject, amount);
+        }
+    }
+    private void UpdateRechargeTimer()
+    {
+        _timer += Time.deltaTime;
+        // Every interval, add a small charge to all items in the _chargeableItems list
+        if (_timer >= _configIntervalSeconds.Value)
+        {
+            _timer -= _configIntervalSeconds.Value; // Reset the timer without losing hanging decimals
+            if (_chargeableItems.Count != 0)
+            {
+                AddCharge(_configRechargeAmountSmall.Value);
+            }
+        }
+    }
+    private void HandleDebugInput()
+    {
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            Logger.LogInfo("F1 key pressed, listing all items with charge in the scene.");
+            var items = GameObject.FindObjectsOfType<ItemBattery>();
+            foreach (var item in items)
+            {
+                Logger.LogInfo($"Found GameObject: {item.name} at position {item.transform.position}");
+                Logger.LogInfo($"  ----> {item} has battery life: {item.batteryLife}");
+            }
+            Logger.LogInfo("Time since level load: " + Time.timeSinceLevelLoad);
+        }
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            Logger.LogInfo("F2 key pressed, providing list of valid chargeable items.");
+            foreach (var item in _chargeableItems)
+            {
+                Logger.LogInfo($"Chargeable item: {item.name}");
+            }
         }
     }
     private void Awake()
@@ -106,35 +141,9 @@ public class SimpleRecharge : BaseUnityPlugin
     private void Update()
     {
         // Code that runs every frame goes here
-        timer += Time.deltaTime;
-        // Every interval, add a small charge to all items in the _chargeableItems list
-        if (timer >= _configIntervalSeconds.Value)
-        {
-            timer -= _configIntervalSeconds.Value; // Reset the timer
-            if (_chargeableItems.Count != 0)
-            {
-                AddCharge(_configRechargeAmountSmall.Value);
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            Logger.LogInfo("F1 key pressed, listing all items with charge in the scene.");
-            var items = GameObject.FindObjectsOfType<ItemBattery>();
-            foreach (var item in items)
-            {
-                Logger.LogInfo($"Found GameObject: {item.name} at position {item.transform.position}");
-                Logger.LogInfo($"Found GameObject: {item} has battery life: {item.batteryLife}");
-            }
-            Logger.LogInfo("Time since level load: " + Time.timeSinceLevelLoad);
-        }
-        if (Input.GetKeyDown(KeyCode.F2))
-        {
-            Logger.LogInfo("F2 key pressed, providing list of valid chargable items.");
-            foreach (var item in _chargeableItems)
-            {
-                Logger.LogInfo($"Chargable item: {item.name}");
-            }
-        }
+        UpdateRechargeTimer();
+        HandleDebugInput();
+
     }
     [HarmonyPatch(typeof(ExtractionPoint))]
     [HarmonyPatch("DestroyAllPhysObjectsInHaulList")]
